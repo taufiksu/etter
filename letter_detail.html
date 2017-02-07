@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/font-awesome.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a class="icon icon-left-nav pull-left" href="index.html" style="color: white;"></a>
+            <a class="icon icon-edit pull-right" id="btn-letter-edit" style="color: white;"></a>
+            <h1 class="title">Informasi Surat</h1>
+        </header>
+
+        <div class="content" style="background-color: #d7d7d7;">
+            <div class="card" style="border-radius: 3px;padding-top:0px;">
+                <ul class="table-view">
+                    <li class="table-view-cell" style="border-bottom: 0px;padding-right: 20px;text-align: center;">
+                        <p>
+                            <i class="fa fa-send-o" style="font-size: 50px;margin-bottom: 8px;"></i><br/>
+                            <span class="my-span" id="about" style="color: #000;">Judul Penelitian</span><br/>
+                            <span class="my-span" id="from" style="font-size: small"></span>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+            <div class="card" style="border-radius: 3px;padding:10px;">
+                <table style="width: 100%;">
+                    <tr style="text-align: center;">
+                        <td style="border-right: 1px solid #d7d7d7;">
+                            <span class="my-span" style="font-size: medium">Kategori</span><br/>
+                            <span id="category" style="font-size: small;font-weight: bold;"></span>
+                        </td>
+                        <td>
+                            <span class="my-span">Tgl Datang</span><br/>
+                            <span id="received" style="font-size: small;font-weight: bold;"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="card" style="border:0px;padding-top:5px;border-radius: 3px;">
+                <ul class="table-view">
+                    <li class="table-view-cell media" style="border: 0px;padding-right: 0px;">
+                        <a>
+                            <i class="media-object pull-left fa fa-barcode" style="font-size: 32px;margin-top: 5px;color: #8f8f94;"></i>
+                            <div class="media-body" style="border-bottom: 1px solid #d7d7d7;padding-right: 70px;padding-bottom: 10px;margin-left: 42px;">
+                                <span class="my-span" style="color: #000;font-weight: bold;font-size: small;">Nomor Surat</span>
+                                <p class="my-span" id="number" style="font-size: small;color: #000"></p>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="table-view-cell media" style="border: 0px;padding-right: 0px;">
+                        <a>
+                            <i class="media-object pull-left fa fa-calendar-o" style="font-size: 32px;margin-top: 5px;color: #8f8f94;"></i>
+                            <div class="media-body" style="border-bottom: 1px solid #d7d7d7;padding-right: 70px;padding-bottom: 10px;margin-left: 42px;">
+                                <span class="my-span" style="color: #000;font-weight: bold;font-size: small;">Tanggal Surat</span>
+                                <p class="my-span" id="date" style="font-size: small;color: #000"></p>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="table-view-cell media" style="border: 0px;padding-right: 0px;">
+                        <a>
+                            <i class="media-object pull-left fa fa-user" style="font-size: 32px;margin-top: 5px;color: #8f8f94;"></i>
+                            <div class="media-body" style="border-bottom: 1px solid #d7d7d7;padding-right: 70px;padding-bottom: 10px;margin-left: 42px;">
+                                <span class="my-span" style="color: #000;font-weight: bold;font-size: small;">Tujuan</span>
+                                <p class="my-span" id="to" style="font-size: small;color: #000"></p>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="table-view-cell media" style="border: 0px;padding-right: 0px;">
+                        <a>
+                            <i class="media-object pull-left fa fa-sticky-note" style="font-size: 32px;margin-top: 5px;color: #8f8f94;"></i>
+                            <div class="media-body" style="border-bottom: 0px solid #d7d7d7;padding-right: 70px;padding-bottom: 10px;margin-left: 42px;">
+                                <span class="my-span" style="color: #000;font-weight: bold;font-size: small;">Deskripsi</span>
+                                <p class="my-span" id="description" style="font-size: small;color: #000"></p>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <div class="card" style="border-radius: 3px;padding:10px;">
+                <table style="width: 100%;">
+                    <tr style="text-align: center;">
+                        <td style="border-right: 1px solid #d7d7d7;width: 35%;">
+                            <i class="fa fa-envelope"></i>
+                            <span class="my-span">Langsung</span><br/>
+                            <span id="physical" style="font-size: small;font-weight: bold;"></span>
+                        </td>
+                        <td style="border-right: 1px solid #d7d7d7;width: 30%;">
+                            <i class="fa fa-phone-square"></i>
+                            <span class="my-span">Fax</span><br/>
+                            <span id="fax" style="font-size: small;font-weight: bold;"></span>
+                        </td>
+                        <td style="width: 35%;">
+                            <i class="fa fa-mail-forward"></i>
+                            <span class="my-span">Email</span><br/>
+                            <span id="email" style="font-size: small;font-weight: bold;"></span>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <ul class="table-view card" style="border-radius: 3px;" id="attachment"></ul>
+            <ul class="table-view card" style="border-radius: 3px;" id="tracking"></ul>
+            <ul class="table-view card" style="border-radius: 3px;" id="task"></ul>
+            <div class="card" style="border:0px;border-radius: 3px;padding: 0px;background-color: #d7d7d7;">
+                <a class="control-item btn btn-block" style="border: 0px;background-color: #1a9bcb;color: #ffffff;width: 100%;" id="btn-scan">Scan</a>
+                <a class="control-item btn btn-block" style="border: 0px;background-color: #F7BE64;color: #ffffff;width: 100%" id="btn-task">Tetapkan Tugas</a>
+                <!--<a class="control-item btn btn-block" style="border: 0px;background-color: #4cd964;color: #ffffff;margin: 15px;width: 92%" id="btn-handnote">Catatan</a>-->
+                <a class="control-item btn btn-block" style="border: 0px;background-color: #d9534f;color: #ffffff;width: 100%" id="btn-disposition">Teruskan</a>
+                <a class="control-item btn btn-block" style="border: 0px;background-color: #00E676;color: #ffffff;width: 100%" id="wa">Kirim WhatsApp</a>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script>
+            $(document).ready(function () {
+                loginCheck();
+
+                var settings = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_id/token/" + token +
+                    "/project/" + project +
+                    "/collection/letter" +
+                    "/appid/" + appid +
+                    "/id/" + getParamValue('id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(settings).done(function (response) {
+                    $('#number').html(response[0].number);
+                    $('#date').html(response[0].date);
+                    $('#received').html(response[0].received);
+                    $('#from').html(response[0].from);
+                    $('#to').html(response[0].to);
+                    $('#about').html(response[0].about);
+                    $('#description').html(response[0].description);
+                    $('#category').html(response[0].category);
+                    if (response[0].physical == 'true') {
+                        $('#physical').html('Ya');
+                    } else {
+                        $('#physical').html('Tidak');
+                    }
+                    if (response[0].fax == 'true') {
+                        $('#fax').html('Ya');
+                    } else {
+                        $('#fax').html('Tidak');
+                    }
+                    if (response[0].email == 'true') {
+                        $('#email').html('Ya');
+                    } else {
+                        $('#email').html('Tidak');
+                    }
+                    $('#btn-scan').attr('href', 'letter_scanner.html?id=' + response[0].id);
+                    $('#btn-letter-edit').attr('href', 'letter_form_edit.html?id=' + response[0].id);
+                    $('#btn-disposition').attr('href', 'letter_division_list.html?letter_id=' + getParamValue('id'));
+                    $('#btn-task').attr('href', 'letter_task.html?letter_id=' + getParamValue('id'));
+                    $('#btn-handnote').attr('href', 'letter_handnote.html?letter_id=' + getParamValue('id'));
+                    var long_url = domain + '/letter_detail.html?id=' + response[0].id;
+                    getShortURL(long_url, function (short_url) {
+                        var text = 'Surat ' + response[0].number +
+                                ',%20Tentang%20' + response[0].about +
+                                ',%20Dari%20' + response[0].from +
+                                ',%20Deskripsi%20' + response[0].description +
+                                ',%20Tautan%20Surat%20' + short_url + '%0A%0A';
+                        $('#wa').attr('href', 'whatsapp://send?text=Surat ' + text);
+                    });
+                });
+
+                var settings2 = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_where/token/" + token +
+                    "/project/" + project +
+                    "/appid/" + appid +
+                    "/collection/letter_attachment" +
+                    "/where_field/letter_id" +
+                    "/where_value/" + getParamValue('id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(settings2).done(function (response2) {
+                    var i = 1;
+                    if (response2.length == 0) {
+                        $('#attachment').hide();
+                    }
+                    $.each(response2, function (key2, value2) {
+                        $('#attachment').append('<li class="table-view-cell media">' +
+                                '<a class="navigate-right" href="letter_attachment_viewer.html?file=' + value2.file + '" onclick="window.open(' + "this.href,'eoffice','toolbar=no,status=no,location=no,menubar=no,resizable=no,left=900,width=900,height=700,left=300,top=50'" + ');return false;">' +
+                                '<div class="media-body my-span" style="font-size: medium;">' + i + ". " + value2.id + '</div>' +
+                                '</a>' +
+                                '</li>');
+                        i++;
+                    });
+                });
+
+                var letter_division = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_where/token/" + token +
+                    "/project/" + project +
+                    "/appid/" + appid +
+                    "/collection/letter_division" +
+                    "/where_field/letter_id" +
+                    "/where_value/" + getParamValue('id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(letter_division).done(function (response) {
+                    if (response.length == 0) {
+                        $('#tracking').hide();
+                    }
+                    $.each(response, function (key, value) {
+                        $('#tracking').append('<li class="table-view-cell media">' +
+                                '<a>' +
+                                '<div class="media-body my-span" style="font-size: medium;" id="division_name' + value.division_id + '"></div>' +
+                                '</a>' +
+                                '</li>');
+                        division_name(value.division_id);
+                    });
+                });
+
+                function division_name(division_id) {
+                    var division = {
+                        "async": true,
+                        "crossDomain": true,
+                        "url": "http://io.nowdb.net/v2/select_id/token/" + token +
+                        "/project/" + project +
+                        "/appid/" + appid +
+                        "/collection/division" +
+                        "/id/" + division_id,
+                        "method": "GET",
+                        "headers": {
+                            "cache-control": "no-cache"
+                        }
+                    }
+
+                    $.ajax(division).done(function (response) {
+                        $('#division_name' + division_id).html(response[0].title);
+                    });
+                }
+
+                var letter_task = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_where/token/" + token +
+                    "/project/" + project +
+                    "/appid/" + appid +
+                    "/collection/letter_task" +
+                    "/where_field/letter_id" +
+                    "/where_value/" + getParamValue('id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(letter_task).done(function (response) {
+                    if (response.length == 0) {
+                        $('#task').hide();
+                    }
+                    $.each(response, function (key, value) {
+                        $('#task').append('<li class="table-view-cell media">' +
+                                '<a>' +
+                                '<div class="media-body my-span" style="font-size: medium;" id="task_name' + value.task_id + '"></div>' +
+                                '</a>' +
+                                '</li>');
+                        task_name(value.task_id);
+                    });
+                });
+
+                function task_name(task_id) {
+                    var task = {
+                        "async": true,
+                        "crossDomain": true,
+                        "url": "http://io.nowdb.net/v2/select_id/token/" + token +
+                        "/project/" + project +
+                        "/appid/" + appid +
+                        "/collection/task" +
+                        "/id/" + task_id,
+                        "method": "GET",
+                        "headers": {
+                            "cache-control": "no-cache"
+                        }
+                    }
+
+                    $.ajax(task).done(function (response) {
+                        $('#task_name' + task_id).html(response[0].title);
+                    });
+                }
+
+                $('#btn-attachment-viewer').click(function () {
+                    window.open($(this).attr('href'), 'title', 'width=800, height=700');
+                    return false;
+                });
+            });
+        </script>
+    </body>
+</html>

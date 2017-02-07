@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/font-awesome.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a class="icon icon-left-nav pull-left" id="btn-back" style="color: white;"></a>
+            <h1 class="title">Bidang</h1>
+        </header>
+
+        <div class="content" style="background-color: #d7d7d7;">
+            <ul class="table-view" style="background-color: #d7d7d7;margin-top:0px;margin-bottom:50px;border-top: 0px;" id="divisionList"></ul>
+
+            <nav class="bar bar-tab" id="bottom-menu"></nav>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script>
+            $(document).ready(function () {
+                loginCheck();
+
+                bottomMenu('document');
+
+                $('#btn-back').attr('href', 'dokumen_detail.html?id=' + getParamValue('document_id'));
+
+                var settings = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_where/token/" + token +
+                    "/project/" + project +
+                    "/collection/division" +
+                    "/appid/" + appid +
+                    "/where_field/parent_id" +
+                    "/where_value/0",
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(settings).done(function (response) {
+                    $.each(response, function (key, value) {
+                        $('#divisionList').append('<li class="table-view-cell media card" style="border-radius: 3px;">' +
+                                '<a class="navigate-right" href="dokumen_division_disposition.html?' +
+                                'document_id=' + getParamValue('document_id') +
+                                '&division_id=' + value.id + '">' +
+                                '<p>' +
+                                '<strong>Bidang </strong>' + value.short_title + ', ' + value.title + '<br/>' +
+                                '<strong>Pimpinan </strong>' + value.leader_name + ', ' + value.leader_email + ', ' + value.leader_phone + '<br/>' +
+                                '</p>' +
+                                '</li>');
+                    });
+                });
+            });
+        </script>
+    </body>
+
+</html>

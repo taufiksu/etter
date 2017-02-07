@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="shortcut icon" href="icon.png">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/Roboto.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+    </head>
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a class="icon icon-left-nav pull-left" href="config_menu.html" style="color: white;"></a>
+            <a class="icon icon-plus pull-right" href="user_form_add.html" style="color: white;"></a>
+            <h1 class="title">Pengguna</h1>
+        </header>
+
+        <div class="content" style="background: #d7d7d7;">
+            <nav class="bar" id="bar-filter">
+                <form class="input-group pull-left" style="padding-top:5px;padding-left:0px;">
+                    <input type="text" placeholder="Cari Pengguna .." style="border-bottom:0px;padding-left:0px;" class="search">
+                </form>
+            </nav>
+
+            <ul class="table-view" style="margin-top:55px;margin-bottom:60px;background-color: #d7d7d7;border: 0px;" id="contentList"></ul>
+
+            <nav class="bar bar-tab" id="bottom-menu"></nav>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                loginCheck();
+
+                bottomMenu('config');
+
+                contentFilter('#contentList');
+
+                var user = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_all" +
+                    "/token/" + token +
+                    "/project/" + project +
+                    "/collection/user" +
+                    "/appid/" + appid,
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                };
+
+                $.ajax(user).done(function (response_user) {
+                    $.each(response_user, function (key, value) {
+                        $('#contentList').append('<li class="card table-view-cell media" style="border-radius: 3px;" id="listUser' + value.id + '">' +
+                                '<a class="navigate-right my-span" href="user_detail.html?id=' + value.id + '">' +
+                                '<i class="media-object pull-left fa fa-user-circle-o" style="height: 42px;font-size: 42px;padding-top: 4px;color: #d7d7d7;"></i>' +
+                                //'<img class="media-object pull-left" src="http://placehold.it/42x42" style="padding-top: 4px;">' +
+                                '<div class="media-body">' +
+                                '<p style="font-size: 10pt;" class="my-span">' +
+                                '<strong style="color: black" class="my-span">' + value.name + '</strong><br/>' +
+                                '<strong style="font-size: 14px;" class="my-span">Username : </strong><span style="font-size: 14px;" class="my-span">' + value.username + '</span><br/>' +
+                                '<strong style="font-size: 14px;" class="my-span">Hak Akses : </strong><span id="Role' + value.id + '" style="font-size: 14px;" class="my-span"></span><br/>' +
+                                '<strong style="font-size: 14px;" class="my-span">Grup : </strong><span id="Division' + value.id + '" style="font-size: 14px;" class="my-span"></span><br/>' +
+                                '</p>' +
+                                '</div>' +
+                                '</a>' +
+                                '</li>');
+                        if (value.role == 1) {
+                            $('#Role' + value.id).html('Admin Sistem');
+                        } else if (value.role == 2) {
+                            $('#Role' + value.id).html('Staf Akses Lengkap');
+                        } else if (value.role == 3) {
+                            $('#Role' + value.id).html('Pimpinan Grup');
+                        } else if (value.role == 4) {
+                            $('#Role' + value.id).html('Anggota Grup');
+                        }
+                        if (value.division_id == null) {
+                            $('#Division' + value.id).html('');
+                        } else if (value.division_id == 0) {
+                            $('#Division' + value.id).html('Tidak Termasuk');
+                        } else {
+                            var division = {
+                                "async": true,
+                                "crossDomain": true,
+                                "url": "http://io.nowdb.net/v2/select_id" +
+                                "/token/" + token +
+                                "/project/" + project +
+                                "/collection/division" +
+                                "/appid/" + appid +
+                                "/id/" + value.division_id,
+                                "method": "GET",
+                                "headers": {
+                                    "cache-control": "no-cache"
+                                }
+                            }
+                            $.ajax(division).done(function (response_division) {
+                                $('#Division' + value.id).html(response_division[0].title);
+                            });
+                        }
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

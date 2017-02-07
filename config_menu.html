@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+        <link rel="shortcut icon" href="icon.png">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <h1 class="title">Menu</h1>
+        </header>
+
+        <div class="content" style="background-color: #d7d7d7;">
+            <ul class="table-view card" style="margin-top: 10px;border-radius: 3px;">
+                <li class="table-view-cell media">
+                    <a class="navigate-right" href="user_list.html">
+                        <i class="media-object pull-left icon fa fa-users"></i>
+                        <div class="media-body">
+                            Pengguna
+                        </div>
+                    </a>
+                </li>
+                <li class="table-view-cell media">
+                    <a class="navigate-right" href="division.html">
+                        <i class="media-object pull-left icon fa fa-sitemap"></i>
+                        <div class="media-body">
+                            Grup
+                        </div>
+                    </a>
+                </li>
+                <li class="table-view-cell media">
+                    <a class="navigate-right">
+                        <i class="media-object pull-left icon fa fa-pencil-square-o"></i>
+                        <div class="media-body">
+                            Tugas
+                        </div>
+                    </a>
+                </li>
+                <li class="table-view-cell media">
+                    <a class="navigate-right">
+                        <i class="media-object pull-left icon fa fa-sign-out"></i>
+                        <div class="media-body">
+                            Keluar
+                        </div>
+                    </a>
+                </li>
+            </ul>
+
+            <nav class="bar bar-tab" id="bottom-menu"></nav>
+        </div>
+
+        <script type="text/javascript">
+            $(document).ready(function () {
+                loginCheck();
+                bottomMenu('config');
+            });
+        </script>
+    </body>
+</html>

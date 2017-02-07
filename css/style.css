@@ -1,0 +1,38 @@
+.form-component-select {
+    width: 100%;
+    height: 35px;
+    -webkit-appearance: none;
+    padding: 0 15px;
+    margin-bottom: 20px;
+    margin-top: 10px;
+    line-height: 21px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    outline: none;
+    font-family: Roboto, sans-serif;
+    font-size: medium;
+}
+
+.my-span {
+    font-family: Roboto, sans-serif;
+    font-size: medium;
+}
+
+.my-input {
+    font-family: Roboto, sans-serif;
+    font-size: medium;
+    margin-top: 10px;
+    color: #777777;
+    resize: vertical;
+}
+
+.floating-panel {
+    position: absolute;
+    top: 94px;
+    left: 0px;
+    z-index: 5;
+    background-color: #fff;
+    font-family: 'Roboto', 'sans-serif';
+    border-radius: 3px;
+}

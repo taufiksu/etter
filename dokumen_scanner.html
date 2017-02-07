@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link href="css/ratchet.css" rel="stylesheet">
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script type="text/javascript" src="js/scanner.js"></script>
+
+        <script>
+            $(document).ready(function () {
+                loginCheck();
+
+                $('#dokumen-detail').attr('href', 'dokumen_detail.html?id=' + getParamValue('id'));
+            });
+
+            function scanAndUploadDirectly() {
+                scanner.scan(displayServerResponse,
+                        {
+                            "output_settings": [
+                                {
+                                    "type": "upload",
+                                    "format": "pdf",
+                                    "upload_target": {
+                                        "url": "http://io.nowdb.net/files/uploader",
+                                        "post_fields": {
+                                            "token": token,
+                                            "project": project
+                                        },
+                                        "post_file_field_name": "fileToUpload",
+                                        "cookies": document.cookie,
+                                        "headers": [
+                                            "Referer: " + window.location.href,
+                                            "User-Agent: " + navigator.userAgent
+                                        ]
+                                    }
+                                }
+                            ]
+                        }
+                );
+            }
+            function displayServerResponse(successful, mesg, response) {
+                var jsonString = response;
+                var json = JSON.parse(jsonString);
+                var data = JSON.parse(json.output[0].result[0]);
+
+                var form = new FormData();
+                form.append("token", token);
+                form.append("project", project);
+                form.append("collection", "document_attachment");
+                form.append("appid", appid);
+                form.append("document_id", getParamValue('id'));
+                form.append("file", data.filename);
+
+                var settings = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/insert",
+                    "method": "POST",
+                    "headers": {
+                        "cache-control": "no-cache",
+                    },
+                    "processData": false,
+                    "contentType": false,
+                    "mimeType": "multipart/form-data",
+                    "data": form
+                }
+
+                $.ajax(settings).done(function (response) {
+                    var obj = jQuery.parseJSON(response);
+                    $(location).attr('href', 'dokumen_detail.html?id=' + getParamValue('id'));
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a class="icon icon-left-nav pull-left" id="dokumen-detail" style="color: white;"></a>
+            <h1 class="title">Scanner Dokumen</h1>
+        </header>
+
+        <div class="content">
+            <div class="card" style="border:0px;padding-top:5px;">
+                <button class="btn btn-positive btn-block" type="button" onclick="scanAndUploadDirectly();">Scan & Upload</button>
+            </div>
+        </div>
+    </body>
+</html>

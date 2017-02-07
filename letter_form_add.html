@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/font-awesome.css" rel="stylesheet">
+        <style>
+            .form-component-select {
+                width: 100%;
+                height: 35px;
+                -webkit-appearance: none;
+                padding: 0 15px;
+                margin-bottom: 15px;
+                line-height: 21px;
+                background-color: #fff;
+                border: 1px solid #ddd;
+                border-radius: 3px;
+                outline: none;
+            }
+        </style>
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a class="icon icon-left-nav pull-left" href="index.html" style="color: white;"></a>
+            <h1 class="title" id="top-title">Input Surat</h1>
+        </header>
+
+        <div class="content" style="background-color: #d7d7d7;">
+            <div class="card" style="border-radius: 3px;">
+                <form class="card" style="border: 0px;">
+                    <span>Nomor Surat</span>
+                    <input name="number" id="number" type="text" placeholder="cth: 00X-Jabar/XX/201X" style="margin-top:10px;">
+                    <span>Tanggal Surat</span>
+                    <input name="date" id="date" type="text" placeholder="cth: 09/31/2016 (mm/dd/yyyy)" style="margin-top:10px;">
+                    <span>Pengirim</span>
+                    <input name="from" id="from" type="text" placeholder="cth: Pemprov Jabar" style="margin-top:10px;">
+                    <span>Tujuan</span>
+                    <input name="to" id="to" type="text" placeholder="cth: Kepala Badan" style="margin-top:10px;">
+                    <span>Hal</span>
+                    <input name="about" id="about" type="text" placeholder="cth: Undangan Rapat" style="margin-top:10px;">
+                    <span>Deskripsi</span>
+                    <textarea name="description" id="description" rows="5" placeholder="cth: Undangan rapat kepala OPD Prov Jabar" style="margin-top:10px;"></textarea>
+                    <span>Langsung</span>
+                    <select class="form-component-select" name="physical" id="physical">
+                        <option value="false">-- Pilih Opsi --</option>
+                        <option value="true">Ya</option>
+                        <option value="false">Tidak</option>
+                    </select>
+                    <span>Fax</span>
+                    <select class="form-component-select" name="fax" id="fax">
+                        <option value="false">-- Pilih Opsi --</option>
+                        <option value="true">Ya</option>
+                        <option value="false">Tidak</option>
+                    </select>
+                    <span>Email</span>
+                    <select class="form-component-select" name="email" id="email">
+                        <option value="false">-- Pilih Opsi --</option>
+                        <option value="true">Ya</option>
+                        <option value="false">Tidak</option>
+                    </select>
+                    <span>Kategori</span>
+                    <select class="form-component-select" name="category" id="category">
+                        <option value="false">-- Pilih Opsi --</option>
+                        <option value="Biasa">Biasa</option>
+                        <option value="Segera">Segera</option>
+                        <option value="Sangat Segera">Sangat Segera</option>
+                    </select>
+                    <button class="btn btn-positive btn-block" id="submitLetter" style="margin-bottom: 0px;">Simpan</button>
+                </form>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script>
+            loginCheck();
+
+            $('#submitLetter').click(function () {
+                var d = new Date();
+                var strDate = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+                var form = new FormData();
+                form.append("token", token);
+                form.append("project", project);
+                form.append("collection", "letter");
+                form.append("appid", appid);
+                form.append("number", $('#number').val());
+                form.append("date", $('#date').val());
+                form.append("received", strDate);
+                form.append("from", $('#from').val());
+                form.append("to", $('#to').val());
+                form.append("description", $('#description').val());
+                form.append("about", $('#about').val());
+                form.append("category", $('#category').val());
+                form.append("physical", $('#physical').val());
+                form.append("email", $('#email').val());
+                form.append("fax", $('#fax').val());
+                form.append("user_id", user_id);
+
+                var settings = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/insert",
+                    "method": "POST",
+                    "headers": {
+                        "cache-control": "no-cache",
+                    },
+                    "processData": false,
+                    "contentType": false,
+                    "mimeType": "multipart/form-data",
+                    "data": form
+                }
+
+                $.ajax(settings).done(function (response) {
+                    var obj = jQuery.parseJSON(response);
+                    $(location).attr('href', 'agenda_form_add_letter.html?id=' + obj[0].id);
+                });
+                return false;
+            });
+        </script>
+    </body>
+</html>

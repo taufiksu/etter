@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/font-awesome.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a class="icon icon-left-nav pull-left" href="hdivision.html" style="color: white;"></a>
+            <h1 class="title" id="short_title"></h1>
+        </header>
+
+        <div class="content" style="background-color: #d7d7d7;">
+            <div class="card" style="border-radius: 3px;padding-top:0px;">
+                <ul class="table-view">
+                    <li class="table-view-cell" style="border-bottom: 0px;padding-right: 20px;text-align: center;">
+                        <p>
+                            <i class="fa fa-sitemap" style="font-size: 50px;margin-bottom: 8px;"></i><br/>
+                            <span class="my-span" id="title" style="color: #000;"></span><br/>
+                            <span class="my-span" id="leader_name" style="font-size: small"></span><br/>
+                            <span class="my-span" id="leader_email" style="font-size: small"></span><br/>
+                            <span class="my-span" id="leader_phone" style="font-size: small"></span>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+            <ul class="table-view card" style="border-radius: 3px;">
+                <li class="table-view-cell media">
+                    <a class="navigate-right" id="btn-nav-letter">
+                        <i class="media-object pull-left icon fa fa-envelope-open-o"></i>
+                        <div class="media-body">
+                            Surat
+                        </div>
+                    </a>
+                </li>
+                <li class="table-view-cell media">
+                    <a class="navigate-right" id="btn-nav-agenda">
+                        <i class="media-object pull-left icon fa fa-calendar-o"></i>
+                        <div class="media-body">
+                            Agenda
+                        </div>
+                    </a>
+                </li>
+                <li class="table-view-cell media">
+                    <a class="navigate-right" id="btn-nav-document">
+                        <i class="media-object pull-left icon fa fa-file-o"></i>
+                        <div class="media-body">
+                            Dokumen
+                        </div>
+                    </a>
+                </li>
+            </ul>
+            <p style="margin-left: 15px;" id="sub-title-grup">
+                <strong>Sub Grup</strong><br/>
+            </p>
+            <ul class="table-view card" style="border:0px;border-radius:3px;margin-top:0px;border-top: 0px;margin-bottom: 10px;" id="subdivisionList"></ul>
+            <input type="hidden" name="parent_id" id="parent_id"/>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script>
+            $(document).ready(function () {
+                loginCheck();
+
+                var settings = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_id/token/" + token + "/project/" + project + "/collection/division/appid/" + appid + "/id/" + getParamValue('id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(settings).done(function (response) {
+                    $('#short_title').html(response[0].short_title);
+                    $('#title').html(response[0].title);
+                    $('#leader_name').html(response[0].leader_name);
+                    $('#leader_email').html(response[0].leader_email);
+                    $('#leader_phone').html(response[0].leader_phone);
+                    $('#parent_id').val(response[0].parent_id);
+
+                    $('#btn-nav-letter').attr("href", "hdivision_letter_date.html?division_id=" + getParamValue('id') + "&date=" + getLetterDate('today'));
+                    $('#btn-nav-agenda').attr("href", "hdivision_agenda_date.html?division_id=" + getParamValue('id') + "&date=" + getAgendaDate('today'));
+                    $('#btn-nav-document').attr("href", "hdivision_document_date.html?division_id=" + getParamValue('id') + "&date=" + getLetterDate('today'));
+                });
+
+                var subdivision = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_where/token/" + token + "/project/" + project + "/collection/division/appid/" + appid + "/where_field/parent_id/where_value/" + getParamValue('id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(subdivision).done(function (response) {
+                    var count_response = response.length;
+                    if (count_response == 0) {
+                        $('#sub-title-grup').hide();
+                    }
+                    $.each(response, function (key, value) {
+                        $('#subdivisionList').append('<li class="table-view-cell media">' +
+                                '<a class="navigate-right" href="hdivision_detail.html?id=' + value.id + '">' +
+                                '<p>' +
+                                '<strong>Bidang </strong>' + value.short_title + ', ' + value.title + '<br/>' +
+                                '<strong>Pimpinan </strong>' + value.leader_name + ', ' + value.leader_email + ', ' + value.leader_phone + '<br/>' +
+                                '</p>' +
+                                '</li>');
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

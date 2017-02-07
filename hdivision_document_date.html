@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="shortcut icon" href="icon.png">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="js/jquery-ui.min.css" rel="stylesheet">
+        <link href="js/jquery-ui.theme.min.css" rel="stylesheet">
+        <link href="css/font-awesome.css" rel="stylesheet">
+        <style>
+            #datepicker,
+            .ui-datepicker,
+            .ui-datepicker-header,
+            .ui-datepicker-calendar {
+                width: 100%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a id="btn-back" class="icon icon-left-nav pull-left" style="color: white;"></a>
+            <h1 class="title" id="title"></h1>
+        </header>
+
+        <div class="content" style="background-color: #d7d7d7;">
+            <nav class="bar" id="bar-filter">
+                <form class="input-group pull-left" style="padding-top:5px;padding-left:0px;">
+                    <input type="text" placeholder="Cari Dokumen .." style="border-bottom:0px;padding-left:0px;" class="search">
+                </form>
+            </nav>
+
+            <div id="date" style="margin: 55px 10px 0px 10px;"></div>
+
+            <ul class="table-view" style="border:0px;margin-top:12px;margin-bottom:0px;background-color: #d7d7d7;" id="documentList"></ul>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script type="text/javascript" src="js/jlinq.js"></script>
+        <script>
+            $(document).ready(function () {
+                loginCheck();
+
+                $("#date").datepicker({
+                    dateFormat: 'mm/d/yy',
+                    onSelect: function (date, picker) {
+                        $(location).attr("href", "hdivision_document_date.html?division_id=" + getParamValue('division_id') + "&date=" + date);
+                    }
+                });
+
+                $('#btn-back').attr("href", "hdivision_detail.html?id=" + getParamValue('division_id'));
+
+                var setting_division = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_id/token/" + token +
+                    "/project/" + project +
+                    "/collection/division" +
+                    "/appid/" + appid +
+                    "/id/" + getParamValue('division_id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(setting_division).done(function (response) {
+                    $('#title').html('Dokumen ' + response[0].short_title + ' ' + getParamValue('date'));
+                });
+
+                var setting_document_division = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_where" +
+                    "/token/" + token +
+                    "/project/" + project +
+                    "/collection/document_division" +
+                    "/appid/" + appid +
+                    "/where_field/division_id" +
+                    "/where_value/" + getParamValue('division_id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+
+                var setting_document = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_all" +
+                    "/token/" + token +
+                    "/project/" + project +
+                    "/collection/document" +
+                    "/appid/" + appid,
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(setting_document_division).done(function (response) {
+                    var document_division = jlinq.from(response).select();
+                    $.ajax(setting_document).done(function (response) {
+                        var document = jLinq.from(response).select();
+                        var join_document_division = jlinq.from(document_division).join(
+                                document,
+                                "document",
+                                "document_id",
+                                "id")
+                                .starts("date", getParamValue('date')).select(function (rec) {
+                                    return rec;
+                                });
+                        $.each(join_document_division, function (key, value) {
+                            $('#documentList').append('<li class="table-view-cell media card" style="border-radius: 3px;">' +
+                                    '<a class="navigate-right" href="dokumen_detail.html?id=' +
+                                    value.document[0].id + '">' +
+                                    value.document[0].number +
+                                    '<p style="margin-top: 8px;">' +
+                                    '<strong>Dari : </strong>' + value.document[0].from + '<br/>' +
+                                    '<strong>Tanggal Masuk : </strong>' + value.document[0].received + '<br/>' +
+                                    '</p>' +
+                                    '<div class="media-body"></div></a>' +
+                                    '</li>');
+                        });
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

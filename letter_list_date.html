@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="shortcut icon" href="icon.png">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/Roboto.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+        <link href="js/jquery-ui.min.css" rel="stylesheet">
+        <link href="js/jquery-ui.theme.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <style>
+            #datepicker,
+            .ui-datepicker,
+            .ui-datepicker-header,
+            .ui-datepicker-calendar {
+                width: 100%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a class="icon icon-plus pull-right" href="letter_form_add.html" style="color: white;"></a>
+            <h1 class="title" id="title">Surat</h1>
+        </header>
+
+        <div class="content" style="background-color: #d7d7d7;">
+            <nav class="bar" id="bar-filter">
+                <form class="input-group pull-left" style="padding-top:5px;padding-left:0px;">
+                    <input type="text" placeholder="Cari Surat .." style="border-bottom:0px;padding-left:0px;" class="search">
+                </form>
+            </nav>
+
+            <div id="date" style="margin: 55px 10px 0px 10px;"></div>
+
+            <a class="control-item btn btn-block" style="margin:12px 10px 10px 10px;border: 0px;background-color: #00E676;color: #ffffff;width: 95%" id="wa">WhatsApp</a>
+
+            <ul class="table-view" style="margin-top:0px;margin-bottom:60px;background-color: #d7d7d7;border: 0px;" id="contentList"></ul>
+
+            <nav class="bar bar-tab" id="bottom-menu"></nav>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script type="text/javascript" src="js/jlinq.js"></script>
+        <script>
+            $(document).ready(function () {
+                loginCheck();
+
+                bottomMenu('letter');
+
+                $("#date").datepicker({
+                    dateFormat: 'm/d/yy',
+                    onSelect: function (date) {
+                        $(location).attr('href', 'letter_list_date.html?date=' + date);
+                    }
+                });
+
+                contentFilter('#letterList');
+
+                $('#title').html('Surat ' + getParamValue('date'));
+
+                var letter = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_all/token/" + token +
+                    "/project/" + project +
+                    "/collection/letter" +
+                    "/appid/" + appid,
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                };
+
+                $.ajax(letter).done(function (response_letter) {
+                    var text = '';
+                    var data_letter = jlinq.from(response_letter).starts("received", getParamValue('date')).select();
+                    $.each(data_letter, function (key, value) {
+                        $('#contentList').append('<li class="card table-view-cell media" style="border-radius: 3px;" id="listLetter' + value.id + '">' +
+                                '<a class="navigate-right my-span" href="letter_detail.html?id=' + value.id + '">' + value.number +
+                                '<p style="margin-top: 8px;font-size: small;" class="my-span">' +
+                                value.description + '<br/>' +
+                                '<strong>Dari : </strong>' + value.from + '<br/>' +
+                                '<strong>Tanggal Masuk : </strong>' + value.received + '<br/>' +
+                                '<strong>Status : </strong>' + value.category + '<br/>' +
+                                '</p>' +
+                                '<div class="media-body"></div></a>' +
+                                '</li>');
+                        var long_url = domain + '/letter_detail.html?id=' + value.id
+                        getShortURL(long_url, function (short_url) {
+                            text += 'Surat ' + value.number +
+                                    ',%20Tentang%20' + value.about +
+                                    ',%20Dari%20' + value.from +
+                                    ',%20Description%20' + value.description +
+                                    ',%20Tautan%20Surat%20' + short_url + '%0A%0A';
+                            $('#wa').attr('href', 'whatsapp://send?text=Surat ' + text);
+                        });
+                        cekLetterDisposition(value.id);
+                    });
+                });
+            });
+        </script>
+    </body>
+</html>

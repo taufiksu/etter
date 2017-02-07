@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="shortcut icon" href="icon.png">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/font-awesome.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <h1 class="title">Akun Pengguna</h1>
+        </header>
+
+        <div class="content" style="background-color: #d7d7d7;">
+            <div class="card" style="border-radius: 3px;">
+                <img src="home.jpeg" style="width: 100px;display: block;margin-left: auto;margin-right: auto;">
+                <form class="card" style="border: 0px;padding-bottom: 0px;">
+                    <span>Username</span>
+                    <input type="text" name="username" id="username">
+                    <span>Password</span>
+                    <input type="password" name="password" id="password">
+                    <button class="btn btn-positive btn-block" id="doLogin" style="margin-bottom: 2px;">Masuk</button>
+                </form>
+            </div>
+            <p style="margin: 10px;line-height: 23px;" id="license"></p>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script type="application/javascript">
+            $('#license').html('Lisensi khusus perusahaan ' + company + '.<br/>ETTER 2016 &copy TAJAM IT Solution.');
+
+            $('#doLogin').click(function () {
+
+                var d = new Date();
+
+                var user = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_where" +
+                    "/token/" + token +
+                    "/project/" + project +
+                    "/collection/user" +
+                    "/appid/" + appid +
+                    "/where_field/usernameANDpassword" +
+                    "/where_value/" + $('#username').val() + "AND" + $('#password').val(),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache",
+                    }
+                }
+
+                $.ajax(user).done(function (response_user) {
+                    if (response_user.length == 0) {
+                        alert("Login Failed! Please Check Account or Password");
+                    } else {
+                        $.ajax({
+                            url: 'https://api.ipify.org?format=json',
+                            dataType: 'json',
+                            success: function (res) {
+                                var strDate = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+                                var form = new FormData();
+                                form.append("token", token);
+                                form.append("project", project);
+                                form.append("collection", "user_login");
+                                form.append("appid", appid);
+                                form.append("username", response_user[0].username);
+                                form.append("user_id", response_user[0].id);
+                                form.append("device_id", browserId());
+                                form.append("ip", res.ip);
+                                form.append("date", strDate);
+                                form.append("role", response_user[0].role);
+
+                                var settings = {
+                                    "async": true,
+                                    "crossDomain": true,
+                                    "url": "http://io.nowdb.net/v2/insert",
+                                    "method": "POST",
+                                    "headers": {
+                                        "cache-control": "no-cache",
+                                    },
+                                    "processData": false,
+                                    "contentType": false,
+                                    "mimeType": "multipart/form-data",
+                                    "data": form
+                                }
+
+                                $.ajax(settings).done(function () {
+                                    $(location).attr('href', 'index.html');
+                                });
+                            }
+                        });
+                    }
+                });
+                return false;
+            });
+        </script>
+    </body>
+</html>

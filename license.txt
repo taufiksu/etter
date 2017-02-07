@@ -1,0 +1,16 @@
+**************************************************************************************
+* E-Office
+*
+* Copyright (c) 2016 E-Office, Taufik Sulaeman Puspanegara
+*
+* @copyright  Copyright (c) 2016 (http://www.nowdb.net)
+* @version    0.1.0, 2016-10-24
+**************************************************************************************
+
+
+To be released:
+
+
+2016/0002 (v0.1.0):
+- Feature:   Work item 0002 - New Themes
+- Bugfix:    Work item 0001 - Initial

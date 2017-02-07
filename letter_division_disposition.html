@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/font-awesome.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a class="icon icon-left-nav pull-left" id="btn-back" style="color: white;"></a>
+            <h1 class="title">Verifikasi</h1>
+        </header>
+
+        <div class="content" style="background-color: #d7d7d7;">
+            <div class="card" style="border-radius: 3px;padding-top:0px;">
+                <ul class="table-view">
+                    <li class="table-view-cell" style="border-bottom: 0px;padding-right: 20px;text-align: center;">
+                        <p>
+                            <i class="fa fa-sitemap" style="font-size: 50px;margin-bottom: 8px;"></i><br/>
+                            <span class="my-span" id="division" style="color: #000;"></span><br/>
+                            <span class="my-span" id="leader_name_header" style="font-size: small"></span><br/>
+                            <span class="my-span" id="leader_email_header" style="font-size: small"></span><br/>
+                            <span class="my-span" id="leader_phone_header" style="font-size: small"></span>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+            <div class="card" style="border:0px;padding-top:5px;border-radius: 3px;">
+                <ul class="table-view">
+                    <li class="table-view-cell media" style="border: 0px;padding-right: 0px;">
+                        <a>
+                            <i class="media-object pull-left fa fa-barcode" style="font-size: 32px;margin-top: 5px;color: #8f8f94;"></i>
+                            <div class="media-body" style="border-bottom: 1px solid #d7d7d7;padding-right: 70px;padding-bottom: 10px;margin-left: 42px;">
+                                <span class="my-span" style="color: #000;font-weight: bold;font-size: small;">Nomor Surat</span>
+                                <p class="my-span" id="number" style="font-size: small;color: #000"></p>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="table-view-cell media" style="border: 0px;padding-right: 0px;">
+                        <a>
+                            <i class="media-object pull-left fa fa-calendar-o" style="font-size: 32px;margin-top: 5px;color: #8f8f94;"></i>
+                            <div class="media-body" style="border-bottom: 1px solid #d7d7d7;padding-right: 70px;padding-bottom: 10px;margin-left: 42px;">
+                                <span class="my-span" style="color: #000;font-weight: bold;font-size: small;">Tanggal Surat</span>
+                                <p class="my-span" id="date_list" style="font-size: small;color: #000"></p>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="table-view-cell media" style="border: 0px;padding-right: 0px;">
+                        <a>
+                            <i class="media-object pull-left fa fa-sticky-note" style="font-size: 32px;margin-top: 5px;color: #8f8f94;"></i>
+                            <div class="media-body" style="border-bottom: 0px solid #d7d7d7;padding-right: 70px;padding-bottom: 10px;margin-left: 42px;">
+                                <span class="my-span" style="color: #000;font-weight: bold;font-size: small;">Deskripsi</span>
+                                <p class="my-span" id="description_list" style="font-size: small;color: #000"></p>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <a class="control-item btn btn-block" style="border: 0px;background-color: #d9534f;color: #ffffff;margin: 10px;width: 95%" id="btn-set-disposition">Teruskan</a>
+            <p style="margin-left: 15px;" id="title-subdivision">
+                <strong>Sub Grup</strong><br/>
+            </p>
+            <ul class="table-view" style="background-color:#d7d7d7;margin-top:0px;border-top: 0px;" id="subdivisionList"></ul>
+            <input type="hidden" id="leader_phone" name="leader_phone"/>
+            <input type="hidden" id="leader_email" name="leader_email"/>
+            <input type="hidden" id="letter_number" name="letter_number"/>
+            <input type="hidden" id="letter_about" name="letter_about"/>
+            <input type="hidden" id="letter_from" name="letter_from"/>
+            <input type="hidden" id="letter_id" name="letter_id"/>
+            <input type="hidden" id="letter_description" name="letter_description"/>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script>
+            $(document).ready(function () {
+                loginCheck();
+
+                $('#btn-back').attr('href', 'letter_division_list.html?letter_id=' + getParamValue('letter_id'));
+
+                /* List Sub Division */
+                var subdivision = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_where" +
+                    "/token/" + token +
+                    "/project/" + project +
+                    "/collection/division" +
+                    "/appid/" + appid +
+                    "/where_field/parent_id" +
+                    "/where_value/" + getParamValue('division_id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+                $.ajax(subdivision).done(function (response) {
+                    if(response.length==0){
+                        $('#title-subdivision').hide();
+                    }
+                    $.each(response, function (key, value) {
+                        $('#subdivisionList').append('<li class="table-view-cell media card" style="border-radius: 3px;">' +
+                                '<a class="navigate-right" href="letter_division_disposition.html?' +
+                                'letter_id=' + getParamValue('letter_id') +
+                                '&division_id=' + value.id + '">' +
+                                '<p>' +
+                                '<strong>Bidang </strong>' + value.short_title + ', ' + value.title + '<br/>' +
+                                '<strong>Pimpinan </strong>' + value.leader_name + ', ' +
+                                value.leader_email + ', ' +
+                                value.leader_phone + '<br/>' +
+                                '</p>' +
+                                '</li>');
+                    });
+                });
+
+                /* Detail Letter */
+                var letter = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_id" +
+                    "/token/" + token +
+                    "/project/" + project +
+                    "/collection/letter" +
+                    "/appid/" + appid +
+                    "/id/" + getParamValue('letter_id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+                $.ajax(letter).done(function (response) {
+                    $('#number').html(response[0].number);
+                    $('#letter_number').val(response[0].number);
+                    $('#letter_about').val(response[0].about);
+                    $('#letter_from').val(response[0].from);
+                    $('#letter_id').val(response[0].id);
+                    $('#letter_description').val(response[0].description);
+
+                    $('#date_list').html(response[0].date);
+                    $('#description_list').html(response[0].description);
+                });
+
+                /* Detail Division */
+                var division = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_id" +
+                    "/token/" + token +
+                    "/project/" + project +
+                    "/collection/division" +
+                    "/appid/" + appid +
+                    "/id/" + getParamValue('division_id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+                $.ajax(division).done(function (response) {
+                    $('#division').html(response[0].title);
+                    $('#leader_phone').val(response[0].leader_phone);
+                    $('#leader_email').val(response[0].leader_email);
+                    $('#leader_name_header').html(response[0].leader_name);
+                    $('#leader_phone_header').html(response[0].leader_phone);
+                    $('#leader_email_header').html(response[0].leader_email);
+                });
+
+                /* Set Disposition */
+                $('#btn-set-disposition').click(function () {
+                    var long_url = domain + '/letter_detail.html?id=' + $('#letter_id').val();
+
+                    getShortURL(long_url, function (short_url) {
+
+                        /* SMS Letter */
+                        var text = 'Surat ' + $('#letter_number').val() +
+                                ',%20Tentang%20' + $('#letter_about').val() +
+                                ',%20Dari%20' + $('#letter_from').val() +
+                                ',%20Dikirim Oleh%20' + signature +
+                                ',%20Tautan%20Surat%20' + short_url;
+
+                        /* Send SMS Letter to Admin */
+                        var form_sms_letter_admin = new FormData();
+                        form_sms_letter_admin.append("number", "081224444056");
+                        form_sms_letter_admin.append("message", text);
+                        var sms_letter_admin = {
+                            "async": true,
+                            "crossDomain": true,
+                            "url": "http://io.nowdb.net/v2/sms",
+                            "method": "POST",
+                            "headers": {
+                                "cache-control": "no-cache",
+                            },
+                            "processData": false,
+                            "contentType": false,
+                            "mimeType": "multipart/form-data",
+                            "data": form_sms_letter_admin
+                        }
+                        $.ajax(sms_letter_admin).done();
+
+                        /* Send SMS Letter to Leader */
+                        var form_sms_letter_leader = new FormData();
+                        form_sms_letter_leader.append("number", $('#leader_phone').val());
+                        form_sms_letter_leader.append("message", text);
+                        var sms_letter_leader = {
+                            "async": true,
+                            "crossDomain": true,
+                            "url": "http://io.nowdb.net/v2/sms",
+                            "method": "POST",
+                            "headers": {
+                                "cache-control": "no-cache",
+                            },
+                            "processData": false,
+                            "contentType": false,
+                            "mimeType": "multipart/form-data",
+                            "data": form_sms_letter_leader
+                        }
+                        $.ajax(sms_letter_leader).done();
+
+                        /* Send Email Letter to Leader */
+                        var form_email_letter_leader = new FormData();
+                        form_email_letter_leader.append("from_email", email_from);
+                        form_email_letter_leader.append("from_name", email_name);
+                        form_email_letter_leader.append("to", $('#leader_email').val());
+                        form_email_letter_leader.append("subject", $('#letter_about').val() + ' ' + $('#letter_number').val());
+                        form_email_letter_leader.append("title", email_name);
+                        form_email_letter_leader.append("institution", email_institution);
+                        form_email_letter_leader.append("institution_address", email_institution_address);
+                        form_email_letter_leader.append("message", '<br/>' + 'Nomor Surat: ' + $('#letter_number').val() + '<br/>' +
+                                ' Hal: ' + $('#letter_about').val() + '<br/>' +
+                                ' Dari: ' + $('#letter_from').val() + '<br/>' +
+                                ' Deskripsi: ' + $('#letter_description').val() + '<br/>' +
+                                ' Tautan: ' + short_url);
+                        var email_letter_leader = {
+                            "async": true,
+                            "crossDomain": true,
+                            "url": "http://io.nowdb.net/v2/mail",
+                            "method": "POST",
+                            "headers": {
+                                "cache-control": "no-cache",
+                            },
+                            "processData": false,
+                            "contentType": false,
+                            "mimeType": "multipart/form-data",
+                            "data": form_email_letter_leader
+                        }
+                        $.ajax(email_letter_leader).done();
+
+                        /* Set Disposition Letter */
+                        var d = new Date();
+                        var strDate = (d.getMonth() + 1) + "/" + d.getDate() + "/" + d.getFullYear();
+                        var form = new FormData();
+                        form.append("token", token);
+                        form.append("project", project);
+                        form.append("collection", "letter_division");
+                        form.append("appid", appid);
+                        form.append("letter_id", getParamValue('letter_id'));
+                        form.append("division_id", getParamValue('division_id'));
+                        form.append("date", strDate);
+                        var settings = {
+                            "async": true,
+                            "crossDomain": true,
+                            "url": "http://io.nowdb.net/v2/insert",
+                            "method": "POST",
+                            "headers": {
+                                "cache-control": "no-cache",
+                            },
+                            "processData": false,
+                            "contentType": false,
+                            "mimeType": "multipart/form-data",
+                            "data": form
+                        }
+                        $.ajax(settings).done(function (response) {
+
+                            /* Set Disposition Agenda */
+                            var agendas = {
+                                "async": true,
+                                "crossDomain": true,
+                                "url": "http://io.nowdb.net/v2/select_where" +
+                                "/token/" + token +
+                                "/project/" + project +
+                                "/collection/agenda" +
+                                "/appid/" + appid +
+                                "/where_field/letter_id" +
+                                "/where_value/" + getParamValue('letter_id'),
+                                "method": "GET",
+                                "headers": {
+                                    "cache-control": "no-cache"
+                                }
+                            }
+                            $.ajax(agendas).done(function (responses) {
+                                var iterate = response.length;
+                                $.when($.each(responses, function (keys, values) {
+                                    var form2 = new FormData();
+                                    form2.append("token", token);
+                                    form2.append("project", project);
+                                    form2.append("collection", "agenda_division");
+                                    form2.append("appid", appid);
+                                    form2.append("letter_id", getParamValue('letter_id'));
+                                    form2.append("division_id", getParamValue('division_id'));
+                                    form2.append("agenda_id", values.id);
+                                    form2.append("due_date", values.due_date);
+                                    form2.append("date", strDate);
+
+                                    var agenda_disposition = {
+                                        "async": true,
+                                        "crossDomain": true,
+                                        "url": "http://io.nowdb.net/v2/insert",
+                                        "method": "POST",
+                                        "headers": {
+                                            "cache-control": "no-cache",
+                                        },
+                                        "processData": false,
+                                        "contentType": false,
+                                        "mimeType": "multipart/form-data",
+                                        "data": form2
+                                    }
+
+                                    $.ajax(agenda_disposition).done();
+
+                                    /* Send SMS Agenda */
+                                    var long_url = domain + '/agenda_detail.html?id=' + $('#letter_id').val();
+                                    getShortURL(long_url, function (short_url_agenda) {
+
+                                        /* SMS */
+                                        var text = 'Agenda%20' + values.description +
+                                                ',%20Temoat%20' + values.place +
+                                                ',%20Waktu%20' + values.due_date + ' ' + values.due_time +
+                                                ',%20Dikirim Oleh%20' + signature +
+                                                ',%20Tautan%20Agenda%20' + short_url_agenda;
+
+                                        /* Send SMS Agenda Leader */
+                                        var form_sms_agenda_leader = new FormData();
+                                        form_sms_agenda_leader.append("number", $('#leader_phone').val());
+                                        form_sms_agenda_leader.append("message", text);
+                                        var sms_agenda_leader = {
+                                            "async": true,
+                                            "crossDomain": true,
+                                            "url": "http://io.nowdb.net/v2/sms",
+                                            "method": "POST",
+                                            "headers": {
+                                                "cache-control": "no-cache",
+                                            },
+                                            "processData": false,
+                                            "contentType": false,
+                                            "mimeType": "multipart/form-data",
+                                            "data": sms_agenda_leader
+                                        }
+                                        $.ajax(sms_agenda_leader).done();
+
+                                        /* Send SMS Agenda Admin */
+                                        var form_sms_agenda_admin = new FormData();
+                                        form_sms_agenda_admin.append("number", "081224444056");
+                                        form_sms_agenda_admin.append("message", text);
+                                        var sms_agenda_admin = {
+                                            "async": true,
+                                            "crossDomain": true,
+                                            "url": "http://io.nowdb.net/v2/sms",
+                                            "method": "POST",
+                                            "headers": {
+                                                "cache-control": "no-cache",
+                                            },
+                                            "processData": false,
+                                            "contentType": false,
+                                            "mimeType": "multipart/form-data",
+                                            "data": form_sms_agenda_admin
+                                        }
+                                        $.ajax(sms_agenda_admin).done();
+
+                                        /* Send Mail Leader */
+                                        var form_email_agenda_leader = new FormData();
+                                        form_email_agenda_leader.append("from_email", email_from);
+                                        form_email_agenda_leader.append("from_name", email_name);
+                                        form_email_agenda_leader.append("to", $('#leader_email').val());
+                                        form_email_agenda_leader.append("subject", values.description + ' ' + $('#letter_number').val());
+                                        form_email_agenda_leader.append("title", email_name);
+                                        form_email_agenda_leader.append("institution", email_institution);
+                                        form_email_agenda_leader.append("institution_address", email_institution_address);
+                                        form_email_agenda_leader.append("message", '<br/>' + 'Agenda: ' + values.description + '<br/>' +
+                                                ' Tempat: ' + values.place + '<br/>' +
+                                                ' Tgl/Waktu: ' + values.due_date + ' ' + values.due_time + '<br/>' +
+                                                ' Tautan Agenda: ' + short_url_agenda +
+                                                ' Tautan Surat: ' + short_url
+                                        );
+
+                                        var email_agenda_leader = {
+                                            "async": true,
+                                            "crossDomain": true,
+                                            "url": "http://io.nowdb.net/v2/mail",
+                                            "method": "POST",
+                                            "headers": {
+                                                "cache-control": "no-cache",
+                                            },
+                                            "processData": false,
+                                            "contentType": false,
+                                            "mimeType": "multipart/form-data",
+                                            "data": form_email_agenda_leader
+                                        }
+
+                                        $.ajax(email_agenda_leader).done();
+                                    });
+
+                                    if (!--iterate) {
+                                        $(location).attr('href', 'letter_detail.html?id=' + getParamValue('letter_id'));
+                                    }
+                                })).then(function (data) {
+                                    $(location).attr('href', 'letter_detail.html?id=' + getParamValue('letter_id'));
+                                });
+                            });
+                        });
+                    });
+                    return false;
+                });
+            });
+        </script>
+    </body>
+</html>

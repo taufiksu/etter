@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="shortcut icon" href="icon.png">
+        <link rel="manifest" href="js/manifest.json">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/Roboto.css" rel="stylesheet">
+        <link href="css/style.css" rel="stylesheet">
+        <link href="js/jquery-ui.min.css" rel="stylesheet">
+        <link href="js/jquery-ui.theme.min.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+        <style>
+            #datepicker,
+            .ui-datepicker,
+            .ui-datepicker-header,
+            .ui-datepicker-calendar {
+                width: 100%;
+            }
+        </style>
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+			<a class="icon icon-plus pull-right" href="letter_form_add.html" style="color: white;"></a>
+            <h1 class="title">Surat</h1>
+        </header>
+
+        <div class="content" style="background: #d7d7d7;">
+            <nav class="bar" id="bar-filter">
+                <a class="icon fa fa-search pull-right" style="width:24px;padding-top:10px;"></a>
+                <form class="input-group pull-left" style="padding-top:5px;padding-left:0px;">
+                    <input type="text" placeholder="Cari Surat .." style="border-bottom:0px;padding-left:0px;" class="search">
+                </form>
+            </nav>
+
+            <div id="date" style="margin: 55px 10px 0px 10px;"></div>
+
+            <ul class="table-view" style="margin-top:12px;margin-bottom:60px;background-color: #d7d7d7;border: 0px;" id="contentList"></ul>
+
+            <nav class="bar bar-tab" id="bottom-menu"></nav>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery-ui.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script>
+            $(document).ready(function () {
+                loginCheck();
+
+                bottomMenu('letter');
+
+                $("#date").datepicker({
+                    dateFormat: 'm/d/yy',
+                    onSelect: function (date, picker) {
+                        $(location).attr('href', 'letter_list_date.html?date=' + date);
+                    }
+                });
+
+                contentFilter('#contentList');
+
+                var letter = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_all" +
+                    "/token/" + token +
+                    "/project/" + project +
+                    "/appid/" + appid +
+                    "/collection/letter" +
+                    "/limit/20",
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                };
+
+                $.ajax(letter).done(function (response_letter) {
+                    $.each(response_letter, function (key, value) {
+                        $('#contentList').append('<li class="card table-view-cell media" style="border-radius: 3px;" id="listLetter' + value.id + '">' +
+                                '<a class="navigate-right my-span" href="letter_detail.html?id=' + value.id + '">' + value.number +
+                                '<p style="margin-top: 8px;font-size: 11pt;" class="my-span">' +
+                                value.description + '<br/>' +
+                                '<strong>Dari : </strong>' + value.from + '<br/>' +
+                                '<strong>Tanggal Masuk : </strong>' + value.received + '<br/>' +
+                                '<strong>Status : </strong>' + value.category + '<br/>' +
+                                '</p>' +
+                                '<div class="media-body"></div></a>' +
+                                '</li>');
+                        cekLetterDisposition(value.id);
+                    });
+                });
+            });
+        </script>
+    </body>
+
+</html>

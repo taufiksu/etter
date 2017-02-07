@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/font-awesome.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a class="icon icon-left-nav pull-left" id="btn-back" style="color: white;"></a>
+            <h1 class="title">Tugas</h1>
+        </header>
+
+        <div class="content">
+            <ul class="table-view" style="margin-top:0px;margin-bottom:50px;border-top: 0px;" id="taskList"></ul>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script>
+            $(document).ready(function () {
+                loginCheck();
+
+                $('#btn-back').attr('href', 'letter_detail.html?id=' + getParamValue('letter_id'));
+
+                var task = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_all/token/" + token +
+                    "/project/" + project +
+                    "/collection/task" +
+                    "/appid/" + appid,
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(task).done(function (response_task) {
+                    $.each(response_task, function (key, value) {
+                        $('#taskList').append('<li class="table-view-cell media" id="btn-task-add' + value.id + '" data-id="' + value.id + '">' +
+                                '<a>' +
+                                '<i class="fa fa-plus-circle icon pull-left media-object"></i>' +
+                                '<div class="media-body">' +
+                                value.title +
+                                '</div>' +
+                                '</a></li>');
+
+                        $('#btn-task-add' + value.id).click(function () {
+                            $('#btn-task-add' + value.id).fadeOut('fast');
+                            var form = new FormData();
+                            form.append("token", token);
+                            form.append("project", project);
+                            form.append("collection", "letter_task");
+                            form.append("appid", appid);
+                            form.append("letter_id", getParamValue('letter_id'));
+                            form.append("task_id", value.id);
+                            form.append("date", getAgendaDate('today'));
+
+                            var task_add = {
+                                "async": true,
+                                "crossDomain": true,
+                                "url": "http://io.nowdb.net/v2/insert",
+                                "method": "POST",
+                                "headers": {
+                                    "cache-control": "no-cache",
+                                },
+                                "processData": false,
+                                "contentType": false,
+                                "mimeType": "multipart/form-data",
+                                "data": form
+                            }
+
+                            $.ajax(task_add).done();
+                            return false;
+                        });
+                    });
+                });
+
+            });
+        </script>
+    </body>
+
+</html>

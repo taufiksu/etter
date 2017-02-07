@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>ETTER - Electronic Letter System</title>
+        <meta name="viewport" content="initial-scale=1, maximum-scale=1">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="shortcut icon" href="icon.png">
+        <link href="css/ratchet.css" rel="stylesheet">
+        <link href="css/font-awesome.min.css" rel="stylesheet">
+    </head>
+
+    <body>
+        <header class="bar bar-nav" style="background-color: #0D3956;">
+            <a class="icon icon-left-nav pull-left" href="user_list.html" style="color: white;"></a>
+            <a class="icon icon-edit pull-right" id="btn-user-edit" style="color: white;"></a>
+            <h1 class="title">Informasi Pengguna</h1>
+        </header>
+
+        <div class="content" style="background-color: #d7d7d7;">
+            <div class="card" style="border-radius: 3px;padding-top:0px;">
+                <ul class="table-view">
+                    <li class="table-view-cell" style="border-bottom: 0px;padding-right: 20px;text-align: center;">
+                        <p>
+                            <i class="fa fa-user-circle-o" style="font-size: 50px;margin-bottom: 8px;"></i><br/>
+                            <span class="my-span" id="name" style="color: #000;"></span><br/>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+            <div class="card" style="border:0px;padding-top:5px;border-radius: 3px;">
+                <ul class="table-view">
+                    <li class="table-view-cell media" style="border: 0px;padding-right: 0px;">
+                        <a>
+                            <i class="media-object pull-left fa fa-id-badge" style="font-size: 32px;margin-top: 5px;color: #8f8f94;"></i>
+                            <div class="media-body" style="border-bottom: 1px solid #d7d7d7;padding-right: 70px;padding-bottom: 10px;margin-left: 42px;">
+                                <span class="my-span" style="color: #000;font-weight: bold;font-size: small;">Username</span>
+                                <p class="my-span" id="user_username" style="font-size: small;color: #000"></p>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="table-view-cell media" style="border: 0px;padding-right: 0px;">
+                        <a>
+                            <i class="media-object pull-left fa fa-sliders" style="font-size: 32px;margin-top: 2px;color: #8f8f94;"></i>
+                            <div class="media-body" style="border-bottom: 1px solid #d7d7d7;padding-right: 70px;padding-bottom: 10px;margin-left: 42px;">
+                                <span class="my-span" style="color: #000;font-weight: bold;font-size: small;">Hak Akses</span>
+                                <p class="my-span" id="user_role" style="font-size: small;color: #000"></p>
+                            </div>
+                        </a>
+                    </li>
+                    <li class="table-view-cell media" style="border: 0px;padding-right: 0px;">
+                        <a>
+                            <i class="media-object pull-left fa fa-street-view" style="font-size: 32px;margin-top: 6px;color: #8f8f94;"></i>
+                            <div class="media-body" style="border-bottom: 0px solid #d7d7d7;padding-right: 70px;padding-bottom: 10px;margin-left: 42px;">
+                                <span class="my-span" style="color: #000;font-weight: bold;font-size: small;">Grup</span>
+                                <p class="my-span" id="user_division" style="font-size: small;color: #000"></p>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/config.js"></script>
+        <script type="text/javascript" src="js/helper.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                loginCheck();
+
+                var user = {
+                    "async": true,
+                    "crossDomain": true,
+                    "url": "http://io.nowdb.net/v2/select_id" +
+                    "/token/" + token +
+                    "/project/" + project +
+                    "/collection/user" +
+                    "/appid/" + appid +
+                    "/id/" + getParamValue('id'),
+                    "method": "GET",
+                    "headers": {
+                        "cache-control": "no-cache"
+                    }
+                }
+
+                $.ajax(user).done(function (response_user) {
+                    $('#name').html(response_user[0].name);
+                    $('#user_username').html(response_user[0].username);
+                    if (response_user[0].role == 1) {
+                        $('#user_role').html('Admin Sistem');
+                    } else if (response_user[0].role == 2) {
+                        $('#user_role').html('Staf Akses Lengkap');
+                    } else if (response_user[0].role == 3) {
+                        $('#user_role').html('Kepala Grup');
+                    } else if (response_user[0].role == 4) {
+                        $('#user_role').html('Anggota Grup');
+                    }
+                    if (response_user[0].division_id == null) {
+                        $('#user_division').html('');
+                    } else if (response_user[0].division_id == 0) {
+                        $('#user_division').html('Tidak Termasuk');
+                    } else {
+                        var division = {
+                            "async": true,
+                            "crossDomain": true,
+                            "url": "http://io.nowdb.net/v2/select_id" +
+                            "/token/" + token +
+                            "/project/" + project +
+                            "/collection/division" +
+                            "/appid/" + appid +
+                            "/id/" + response_user[0].division_id,
+                            "method": "GET",
+                            "headers": {
+                                "cache-control": "no-cache"
+                            }
+                        }
+                        $.ajax(division).done(function (response_division) {
+                            $('#user_division').html(response_division[0].title);
+                        });
+                    }
+                    $('#btn-user-edit').attr('href', 'user_form_edit.html?id=' + response_user[0].id);
+                });
+            });
+        </script>
+    </body>
+</html>
